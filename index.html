@@ -8,36 +8,45 @@
 </head>
 <body>
 
-  <header>
+  <!-- Sticky Header -->
+  <header id="main-header">
     <h1>My Professional Real Estate Portfolio</h1>
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search by title or location">
+      <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="For Sale">For Sale</option>
+        <option value="Sold">Sold</option>
+      </select>
+      <select id="sortFilter">
+        <option value="">Sort by</option>
+        <option value="priceLow">Price: Low → High</option>
+        <option value="priceHigh">Price: High → Low</option>
+        <option value="featured">Featured</option>
+      </select>
+      <button id="themeToggle">🌙</button>
+    </div>
   </header>
 
-  <div class="controls" id="controls-bar">
-    <input type="text" id="searchInput" placeholder="Search by title or location">
-    <select id="statusFilter">
-      <option value="">All Status</option>
-      <option value="For Sale">For Sale</option>
-      <option value="Sold">Sold</option>
-    </select>
-  </div>
-
+  <!-- Property Cards Container -->
   <div class="container" id="cards-container"></div>
 
-  <!-- Details View -->
+  <!-- Details Modal -->
   <div class="details-view" id="details-view"></div>
 
+  <!-- Footer -->
   <footer>
     <h2>Connect with Us</h2>
     <div class="social-container">
-      <a class="social-card" href="https://www.facebook.com/share/1Dx4xN9ZAp/" target="_blank">
+      <a class="social-card" href="#" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
         <span>Facebook</span>
       </a>
-      <a class="social-card" href="https://wa.me/919059841369" target="_blank">
+      <a class="social-card" href="#" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
         <span>WhatsApp</span>
       </a>
-      <a class="social-card" href="mailto:lohithss369@gmail.com" target="_blank">
+      <a class="social-card" href="#" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" alt="Gmail">
         <span>Email</span>
       </a>
