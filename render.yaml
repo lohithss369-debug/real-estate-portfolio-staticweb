@@ -3,6 +3,6 @@ services:
     name: real-estate-portfolio-staticweb
     env: static
     plan: free
-    region: oregon
+    region: singapore
     buildCommand: "echo 'No build needed for static site'"
     publishPath: "/"   # Root folder contains index.html
