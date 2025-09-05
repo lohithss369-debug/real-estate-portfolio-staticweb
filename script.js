@@ -2,6 +2,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzvYQEgbW1nJD7FUJ9-rfBvGBUdkrk-8_IyRsPkC4da6IS6iVjLPPZPLn4_9YXaWHOm8g/exec";
 
 let allProperties = [];
+let currentCategory = "";
 
 // Render property cards
 function renderCards(properties, reset=true){
@@ -38,7 +39,8 @@ function filterProperties(){
   let filtered = allProperties.filter(item=>{
     const matchesSearch = item.Title.toLowerCase().includes(searchTerm) || item.Location.toLowerCase().includes(searchTerm);
     const matchesStatus = statusTerm==='' || item.Status===statusTerm;
-    return matchesSearch && matchesStatus;
+    const matchesCategory = currentCategory==='' || item.Category===currentCategory;
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
   if(sortTerm==='priceLow') filtered.sort((a,b)=>parseInt(a.Price.replace(/\D/g,'')) - parseInt(b.Price.replace(/\D/g,'')));
@@ -50,10 +52,12 @@ function filterProperties(){
 
 // Details modal
 function showDetails(item){
+  document.getElementById('cards-container').style.display='flex';
   document.getElementById('cards-container').style.display='none';
   document.getElementById('main-header').style.display='none';
-  const detailsView = document.getElementById('details-view');
+  document.querySelector('.categories').style.display='none';
 
+  const detailsView = document.getElementById('details-view');
   const images = item.ImageGallery || [item.ImageURL];
   const carousel = images.map(url=>`<img src="${url}" alt="${item.Title}">`).join('');
 
@@ -75,6 +79,7 @@ function goBack(){
   document.getElementById('details-view').classList.remove('active');
   document.getElementById('cards-container').style.display='flex';
   document.getElementById('main-header').style.display='block';
+  document.querySelector('.categories').style.display='flex';
 }
 
 // Theme toggle
@@ -86,6 +91,14 @@ document.getElementById('themeToggle').addEventListener('click', ()=>{
 document.getElementById('searchInput').addEventListener('input', filterProperties);
 document.getElementById('statusFilter').addEventListener('change', filterProperties);
 document.getElementById('sortFilter').addEventListener('change', filterProperties);
+
+// Category filter
+document.querySelectorAll('.category-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    currentCategory = btn.getAttribute('data-category');
+    filterProperties();
+  });
+});
 
 // Fetch live data from Google Apps Script
 fetch(API_URL)
