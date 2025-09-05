@@ -1,5 +1,5 @@
 // Replace with your public Google Apps Script URL
-const API_URL = "YOUR_PUBLIC_GOOGLE_APPS_SCRIPT_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbzvYQEgbW1nJD7FUJ9-rfBvGBUdkrk-8_IyRsPkC4da6IS6iVjLPPZPLn4_9YXaWHOm8g/exec";
 
 let allProperties = [];
 
