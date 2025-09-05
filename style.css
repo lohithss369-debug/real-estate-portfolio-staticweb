@@ -1,109 +1,203 @@
-// Replace with your public Google Apps Script URL
-const API_URL = "https://script.google.com/macros/s/AKfycbzvYQEgbW1nJD7FUJ9-rfBvGBUdkrk-8_IyRsPkC4da6IS6iVjLPPZPLn4_9YXaWHOm8g/exec";
-
-let allProperties = [];
-let currentCategory = "";
-
-// Render property cards
-function renderCards(properties, reset=true){
-  const container = document.getElementById('cards-container');
-  if(reset) container.innerHTML = '';
-
-  properties.forEach(item=>{
-    const card = document.createElement('div');
-    card.classList.add('card');
-    if(item.Featured) card.classList.add('featured');
-
-    card.innerHTML = `
-      ${item.Hot ? '<span class="badge-hot">HOT</span>' : ''}
-      <img src="${item.ImageURL}" alt="${item.Title}">
-      <div class="card-body">
-        <h2>${item.Title}</h2>
-        <p><strong>Location:</strong> ${item.Location}</p>
-        <p><strong>Price:</strong> ${item.Price}</p>
-        <p>${item.Description}</p>
-        <span class="status ${item.Status==='Sold'?'sold':'for-sale'}">${item.Status}</span>
-      </div>
-    `;
-    card.addEventListener('click', ()=>showDetails(item));
-    container.appendChild(card);
-  });
+:root {
+  --bg-color: #f5f5f5;
+  --card-bg: #fff;
+  --text-color: #333;
+  --accent-color: #28a745;
 }
 
-// Filter and sort
-function filterProperties(){
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  const statusTerm = document.getElementById('statusFilter').value;
-  const sortTerm = document.getElementById('sortFilter').value;
-
-  let filtered = allProperties.filter(item=>{
-    const matchesSearch = item.Title.toLowerCase().includes(searchTerm) || item.Location.toLowerCase().includes(searchTerm);
-    const matchesStatus = statusTerm==='' || item.Status===statusTerm;
-    const matchesCategory = currentCategory==='' || item.Category===currentCategory;
-    return matchesSearch && matchesStatus && matchesCategory;
-  });
-
-  if(sortTerm==='priceLow') filtered.sort((a,b)=>parseInt(a.Price.replace(/\D/g,'')) - parseInt(b.Price.replace(/\D/g,'')));
-  if(sortTerm==='priceHigh') filtered.sort((a,b)=>parseInt(b.Price.replace(/\D/g,'')) - parseInt(a.Price.replace(/\D/g,'')));
-  if(sortTerm==='featured') filtered.sort((a,b)=>b.Featured - a.Featured);
-
-  renderCards(filtered);
+body.dark {
+  --bg-color: #1e1e1e;
+  --card-bg: #2c2c2c;
+  --text-color: #f0f0f0;
+  --accent-color: #4cd137;
 }
 
-// Details modal
-function showDetails(item){
-  document.getElementById('cards-container').style.display='none';
-  document.getElementById('main-header').style.display='none';
-  document.querySelector('.categories').style.display='none';
-
-  const detailsView = document.getElementById('details-view');
-  const images = item.ImageGallery || [item.ImageURL];
-  const carousel = images.map(url=>`<img src="${url}" alt="${item.Title}">`).join('');
-
-  detailsView.innerHTML = `
-    <div class="details-card">
-      <div class="carousel">${carousel}</div>
-      <h2>${item.Title}</h2>
-      <p><strong>Location:</strong> ${item.Location}</p>
-      <p><strong>Price:</strong> ${item.Price}</p>
-      <p><strong>Status:</strong> ${item.Status}</p>
-      <p>${item.Description}</p>
-      <button class="back-btn" onclick="goBack()">⬅ Back</button>
-    </div>
-  `;
-  detailsView.classList.add('active');
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+  overflow-x: hidden;
 }
 
-function goBack(){
-  document.getElementById('details-view').classList.remove('active');
-  document.getElementById('cards-container').style.display='flex';
-  document.getElementById('main-header').style.display='block';
-  document.querySelector('.categories').style.display='flex';
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(90deg, #333, #555);
+  color: white;
+  text-align: center;
+  padding: 20px 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-// Theme toggle
-document.getElementById('themeToggle').addEventListener('click', ()=>{
-  document.body.classList.toggle('dark');
-});
+header h1 { margin: 0 0 10px 0; }
 
-// Event listeners
-document.getElementById('searchInput').addEventListener('input', filterProperties);
-document.getElementById('statusFilter').addEventListener('change', filterProperties);
-document.getElementById('sortFilter').addEventListener('change', filterProperties);
+.controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
-// Category filter
-document.querySelectorAll('.category-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    currentCategory = btn.getAttribute('data-category');
-    filterProperties();
-  });
-});
+.controls input, .controls select, .controls button {
+  padding: 8px 12px;
+  font-size: 1em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
 
-// Fetch live data from Google Apps Script
-fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    allProperties = data;
-    renderCards(allProperties);
-  })
-  .catch(err => console.error("Error fetching data:", err));
+.controls button {
+  cursor: pointer;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  transition: background 0.2s;
+}
+.controls button:hover { background: darkgreen; }
+
+/* Category Section */
+.categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px;
+}
+.category-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 20px;
+  background: var(--accent-color);
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.category-btn:hover { background: darkgreen; }
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.card.featured { width: 340px; }
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.card img { width: 100%; height: 200px; object-fit: cover; }
+
+.card-body { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+
+.card-body h2 { margin: 0 0 10px; font-size: 1.2em; }
+.card-body p { margin: 5px 0; font-size: 0.95em; }
+
+.status {
+  margin-top: auto;
+  font-weight: bold;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.for-sale { background-color: #28a745; }
+.sold { background-color: #dc3545; }
+
+.badge-hot {
+  background-color: orange;
+  position: absolute;
+  top:10px; left:10px;
+  padding: 5px 10px;
+  font-weight:bold;
+  color:white;
+  border-radius:5px;
+}
+
+.details-view { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+.details-view.active { display: block; }
+
+.details-card {
+  max-width: 700px;
+  margin: auto;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.details-card img { width: 100%; height: 350px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; }
+.carousel { display: flex; overflow-x: auto; gap: 10px; margin-bottom: 20px; }
+.carousel img { height: 250px; border-radius: 8px; }
+
+.back-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-color);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.back-btn:hover { background: darkgreen; }
+
+footer {
+  background: linear-gradient(90deg, #333, #555);
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.social-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+.social-card {
+  background: var(--card-bg);
+  color: var(--text-color);
+  width: 150px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.social-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+.social-card img { width: 80px; height: 80px; margin-bottom: 10px; }
+.social-card span { font-weight: bold; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+
+@media (max-width: 650px) {
+  .card, .card.featured { width: 100%; }
+  .controls { flex-direction: column; gap: 8px; }
+  .categories { flex-direction: column; gap: 8px; }
+}
